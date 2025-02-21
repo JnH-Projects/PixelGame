@@ -26,7 +26,11 @@ export default class GameEngine {
           x: -(1600 / 2 - screenWidth / 2),
           y: -(1280 / 2 - screenHeight / 2),
         },
-        TilemapGenerator.convertSingleArrayMapTo2DArray(world_collider)
+        TilemapGenerator.convertSingleArrayMapTo2DArray(
+          world_collider,
+          { row: 50, column: 40 },
+          1
+        )
       )
       .loadLevel(1)
       .zoomInAnimation(0.2, onLoadCallback);
