@@ -1,6 +1,7 @@
 import { CanvasScreen } from "@jaymar921/2dgraphic-utils";
 import TilemapGenerator from "../handlers/TilemapGenerator";
 import { world_collider, world_map_img_source } from "../constants/world_data";
+import SoundEngine from "./SoundEngine";
 
 export default class GameEngine {
   /**
@@ -10,6 +11,7 @@ export default class GameEngine {
   constructor(canvasScreen) {
     this.canvasScreen = canvasScreen;
     this.world = new TilemapGenerator(canvasScreen);
+    this.soundEngine = new SoundEngine();
   }
 
   initializeWorld(onLoadCallback = () => {}) {
@@ -36,5 +38,9 @@ export default class GameEngine {
       .zoomInAnimation(0.2, onLoadCallback);
 
     return this;
+  }
+
+  playBackgroundMusic() {
+    this.soundEngine.playBackgroundMusic(true);
   }
 }
