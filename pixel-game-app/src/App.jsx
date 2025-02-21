@@ -1,9 +1,7 @@
 import { useEffect, useState } from "react";
 import "./App.css";
 import { useCanvas } from "./hooks/useCanvas";
-import TilemapGenerator from "./handlers/TilemapGenerator";
-import { world_collider, world_map_img_source } from "./constants/world_data";
-import { CanvasScreen } from "@jaymar921/2dgraphic-utils";
+import GameEngine from "./engines/GameEngine";
 
 function App() {
   const canvasScreen = useCanvas(
@@ -12,34 +10,22 @@ function App() {
     window.innerHeight,
     "#25220E"
   );
-  const [world, setWorld] = useState(null);
+  const [gameEngine, setGameEngine] = useState(null);
 
   const loginPlayer = () => {};
 
   useEffect(() => {
-    if (!canvasScreen.getScreen() && !world) return;
-    const screenWidth = window.innerWidth;
-    const screenHeight = window.innerHeight;
+    if (!canvasScreen.getScreen() && !gameEngine) return;
     canvasScreen.enableScreenDrag(true);
     canvasScreen.enableScreenZoom(true);
 
-    if (!world) {
-      const worldGen = new TilemapGenerator(canvasScreen.getScreen())
-        .addLevel(
-          world_map_img_source,
-          1600,
-          1280,
-          {
-            x: -(1600 / 2 - screenWidth / 2),
-            y: -(1280 / 2 - screenHeight / 2),
-          },
-          TilemapGenerator.convertSingleArrayMapTo2DArray(world_collider)
-        )
-        .loadLevel(1)
-        .zoomInAnimation(0.2, loginPlayer);
-      setWorld(worldGen);
+    // initialize the game engine
+    if (!gameEngine) {
+      const engine = new GameEngine(canvasScreen.getScreen());
+      engine.initializeWorld(loginPlayer);
+      setGameEngine(engine);
     }
-  }, [canvasScreen, world]);
+  }, [canvasScreen, gameEngine]);
 
   return (
     <>
