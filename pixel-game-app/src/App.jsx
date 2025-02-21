@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import "./App.css";
 import { useCanvas } from "./hooks/useCanvas";
 import GameEngine from "./engines/GameEngine";
+import Menu from "./components/Menu";
 
 function App() {
   const canvasScreen = useCanvas(
@@ -11,8 +12,11 @@ function App() {
     "#25220E"
   );
   const [gameEngine, setGameEngine] = useState(null);
+  const [showMenu, setShowMenu] = useState(false);
 
-  const loginPlayer = () => {};
+  const loadMenu = () => {
+    setShowMenu(true);
+  };
 
   useEffect(() => {
     if (!canvasScreen.getScreen() && !gameEngine) return;
@@ -22,13 +26,14 @@ function App() {
     // initialize the game engine
     if (!gameEngine) {
       const engine = new GameEngine(canvasScreen.getScreen());
-      engine.initializeWorld(loginPlayer);
+      engine.initializeWorld(loadMenu);
       setGameEngine(engine);
     }
   }, [canvasScreen, gameEngine]);
 
   return (
     <>
+      {showMenu && <Menu gameEngine={gameEngine} setShowMenu={setShowMenu} />}
       <div className="flex justify-center place-items-center h-screen">
         <canvas className="w-full h-full" id="canvas-screen"></canvas>
       </div>
