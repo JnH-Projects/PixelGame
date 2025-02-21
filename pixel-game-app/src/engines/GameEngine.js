@@ -2,6 +2,8 @@ import { CanvasScreen } from "@jaymar921/2dgraphic-utils";
 import TilemapGenerator from "../handlers/TilemapGenerator";
 import { world_collider, world_map_img_source } from "../constants/world_data";
 import SoundEngine from "./SoundEngine";
+import { TreeGenerator } from "../handlers/TreeGenerator";
+import { TreeMap } from "../constants/trees_data";
 
 export default class GameEngine {
   /**
@@ -12,6 +14,7 @@ export default class GameEngine {
     this.canvasScreen = canvasScreen;
     this.world = new TilemapGenerator(canvasScreen);
     this.soundEngine = new SoundEngine();
+    this.treesGenerator = new TreeGenerator(this.world);
   }
 
   initializeWorld(onLoadCallback = () => {}) {
@@ -30,12 +33,23 @@ export default class GameEngine {
         },
         TilemapGenerator.convertSingleArrayMapTo2DArray(
           world_collider,
-          { row: 50, column: 40 },
+          { row: 40, column: 50 },
           1
         )
       )
       .loadLevel(1)
       .zoomInAnimation(0.2, onLoadCallback);
+
+    this.treesGenerator
+      .addTreesLevel(
+        1,
+        TilemapGenerator.convertSingleArrayMapTo2DArray(
+          TreeMap,
+          { row: 40, column: 50 },
+          1
+        )
+      )
+      .loadTrees(1);
 
     return this;
   }

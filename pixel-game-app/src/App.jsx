@@ -12,11 +12,7 @@ function App() {
     "#25220E"
   );
   const [gameEngine, setGameEngine] = useState(null);
-  const [showMenu, setShowMenu] = useState(false);
-
-  const loadMenu = () => {
-    setShowMenu(true);
-  };
+  const [showMenu, setShowMenu] = useState(true);
 
   useEffect(() => {
     if (!canvasScreen.getScreen() && !gameEngine) return;
@@ -26,7 +22,7 @@ function App() {
     // initialize the game engine
     if (!gameEngine) {
       const engine = new GameEngine(canvasScreen.getScreen());
-      engine.initializeWorld(loadMenu);
+      engine.initializeWorld();
       setGameEngine(engine);
     }
   }, [canvasScreen, gameEngine]);

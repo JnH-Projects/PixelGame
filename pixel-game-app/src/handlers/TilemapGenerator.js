@@ -1,4 +1,5 @@
 import { CanvasScreen, Sprite } from "@jaymar921/2dgraphic-utils";
+import { collisionBlockImage } from "../constants/world_data";
 
 export default class TilemapGenerator {
   /**
@@ -27,16 +28,19 @@ export default class TilemapGenerator {
 
     const colliderSprites = [];
 
+    let width = colliders.length,
+      height = colliders[0]?.length ?? 0;
     for (let y = 0; y < colliders.length; y++) {
       for (let x = 0; x < colliders[y].length; x++) {
         if (colliders[y][x] === 0) continue;
-        const posX = x * (mapWidth / colliders[y].length);
-        const posY = y * (mapHeight / colliders.length);
+        const posX = x * (mapWidth / colliders[y].length) + offset.x;
+        const posY = y * (mapHeight / colliders.length) + offset.y;
         const colliderSprite = new Sprite({
           objID: `collider-${posX}-${posY}`,
           name: "id-" + colliders[y][x],
           posX,
           posY,
+          imageSource: collisionBlockImage,
         });
         colliderSprites.push(colliderSprite);
       }
@@ -48,6 +52,9 @@ export default class TilemapGenerator {
       colliders: colliderSprites,
       mapWidth,
       mapHeight,
+      width,
+      height,
+      offset,
       boxSize: mapHeight / colliders.length,
     });
 
@@ -56,7 +63,7 @@ export default class TilemapGenerator {
 
   loadLevel(n) {
     const level = this.levels[n - 1];
-    if (!level) return;
+    if (!level) return this;
 
     this.canvasScreen.registerObject(level.map);
 
@@ -65,6 +72,27 @@ export default class TilemapGenerator {
     }
 
     return this;
+  }
+
+  /**
+   *
+   * @param {Number} n
+   * @returns {{ level: Number, map: Sprite, colliders: Array<Number>, mapWidth: Number, mapHeight: Number, width: Number, height: Number, boxSize: Number, offset: {x : Number, y: Number} }}
+   */
+  getLevel(n) {
+    return (
+      this.levels[n - 1] ?? {
+        level: 0,
+        map: "",
+        colliders: [],
+        mapWidth: 0,
+        mapHeight: 0,
+        width: 0,
+        height: 0,
+        boxSize: 0,
+        offset: { x: 0, y: 0 },
+      }
+    );
   }
 
   zoomInAnimation(from, afterAnimationCallback = () => {}, speed = 0.008) {
