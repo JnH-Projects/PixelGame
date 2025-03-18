@@ -40,7 +40,7 @@ export default class TilemapGenerator {
           name: "id-" + colliders[y][x],
           posX,
           posY,
-          imageSource: collisionBlockImage,
+          //imageSource: collisionBlockImage, // uncomment to show collision blocks
         });
         colliderSprites.push(colliderSprite);
       }
@@ -95,14 +95,19 @@ export default class TilemapGenerator {
     );
   }
 
-  zoomInAnimation(from, afterAnimationCallback = () => {}, speed = 0.008) {
+  zoomInAnimation(
+    from,
+    to = 1,
+    afterAnimationCallback = () => {},
+    speed = 0.008
+  ) {
     setTimeout(() => {
       let scale = from;
 
       const { width, height } = CanvasScreen.screen;
       const id = setInterval(async () => {
         if (!this.canvasScreen) return;
-        if (scale >= 1) {
+        if (scale >= to) {
           clearInterval(id);
           afterAnimationCallback();
           return;

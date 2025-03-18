@@ -11,12 +11,19 @@ function Menu({ gameEngine, setShowMenu = () => {} }) {
     gameEngine.playBackgroundMusic();
   }
 
+  function handleGameStart() {
+    gameEngine.loadPlayer();
+    gameEngine.initializeControls();
+    setShowMenu(false);
+    gameEngine.world.zoomInAnimation(1, 0.5, () => {});
+  }
+
   function loadMenuScreen(screen) {
     switch (screen) {
       case menu_screen.start:
         return <StartMenu onClick={handleMenuStart} />;
       case menu_screen.menu:
-        return <MainMenu gameEngine={gameEngine} setShowMenu={setShowMenu} />;
+        return <MainMenu handleGameStart={handleGameStart} />;
       default:
         return <></>;
     }
