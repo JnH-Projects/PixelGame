@@ -15,7 +15,7 @@ function Menu({ gameEngine, setShowMenu = () => {} }) {
     gameEngine.loadPlayer();
     gameEngine.initializeControls();
     setShowMenu(false);
-    gameEngine.world.zoomInAnimation(1, 0.5, () => {});
+    gameEngine.world.zoomInAnimation(1, 2, () => {});
   }
 
   function loadMenuScreen(screen) {
