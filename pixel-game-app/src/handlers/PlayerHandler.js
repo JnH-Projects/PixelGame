@@ -16,6 +16,11 @@ export default class PlayerHandler {
     this.canvasScreen = canvasScreen;
     this.player = null;
     this.name = name;
+    this.target = {
+      x: 0,
+      y: 0,
+    };
+    this.prevDirection = "left";
   }
 
   initializePlayer(posX = 0, posY = 0) {
@@ -46,13 +51,17 @@ export default class PlayerHandler {
         },
       },
       hitbox: {
-        x: 8,
-        width: 16,
-        y: 10,
-        height: 22,
+        x: 4,
+        width: 10, // 4 + 10 + 4 = 18
+        y: 2,
+        height: 20,
       },
     });
 
+    this.target = {
+      x: posX,
+      y: posY,
+    };
     // add player to the canvas
     this.player = player;
     this.canvasScreen.registerObject(this.player);
@@ -60,14 +69,88 @@ export default class PlayerHandler {
 
   loadControls() {
     // register player move event
-    this.canvasScreen.handleScreenClickedEvent(this.playerMoveEvent);
+    this.canvasScreen.handleScreenClickedEvent((e) =>
+      this.changeDirectionCoordinate(e, this)
+    );
+
+    setInterval(() => this.movePlayerTowardDirection(this), 100);
   }
 
-  playerMoveEvent(event) {
-    const { layers, mousePosition, type, objID } = event;
+  /**
+   *
+   * @param {*} event
+   * @param {PlayerHandler} screen
+   * @returns
+   */
+  changeDirectionCoordinate(event, playerHandler) {
+    const { mousePosition } = event;
+    const player = playerHandler.player;
+    const screen = playerHandler.canvasScreen;
 
-    if (layers.length === 0) return;
+    // set the new direction
+    const x =
+      (mousePosition.x -
+        (player.width / 2) * player.scale * screen.globalScale) /
+      screen.globalScale;
+    const y =
+      (mousePosition.y -
+        (player.height / 2) * player.scale * screen.globalScale) /
+      screen.globalScale;
 
-    console.log(layers);
+    playerHandler.target = {
+      x,
+      y,
+    };
+  }
+
+  movePlayerTowardDirection(playerHandler) {
+    const player = playerHandler.player;
+    const target = playerHandler.target;
+    const gS = playerHandler.canvasScreen.globalScale;
+
+    if (target.x === null || target.y === null) {
+      if (this.prevDirection === "left") player.switchAnimation("idleLeft");
+      else player.switchAnimation("idleRight");
+      return;
+    }
+
+    const speed = 2;
+
+    const hitbox = player.getHitbox();
+
+    let dx = target.x - (hitbox.x + hitbox.width / 2);
+    let dy = target.y - (hitbox.y + hitbox.height / 2);
+    let distance = Math.sqrt(dx * dx + dy * dy);
+
+    if (distance < speed) {
+      // Stop moving if close to target
+      target.x = null;
+      target.y = null;
+      return;
+    }
+    // Normalize movement vector
+    let moveX = (dx / distance) * speed;
+    let moveY = (dy / distance) * speed;
+
+    if (moveX < 0) {
+      this.prevDirection = "left";
+      player.switchAnimation("walkLeft");
+    } else if (moveX > 0) {
+      this.prevDirection = "right";
+      player.switchAnimation("walkRight");
+    }
+    // Move player
+    player.posX += moveX;
+    //this.checkForHorizontalCollision(["id-1"]);
+
+    player.posY += moveY;
+    //this.checkForVerticalCollision(["id-1"]);
+
+    // if player collide with a specific collision block id
+    // const collisionId = this.checkAllDirectionCollision(["id-2", "id-3", "id-4"]);
+    // for(const cbks of this.callbacks) cbks({
+    //     collisionId: collisionId,
+    //     position: { x: player.posX, y: player.posY }
+    // })
   }
 }
